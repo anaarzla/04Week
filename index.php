@@ -5,6 +5,7 @@
 ?>
 <!DOCTYPE html>
 <html lang = "en">
+
     <head>
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width-device-width, initial-scale=1.0">
@@ -12,26 +13,15 @@
         <title>ToDo List</title>
     </head>
 
-    <body>
-        <h2>ToDo List</h2><br>
-        <table id = "addItemsTable">
-
+        <h3>Add things to list</h3>
             <form action = "index.php" method = "POST">
-                <th id = "nameOfTable1">Add Items to List</th>
-                <tr>
-                    <td id = "T_and_D">
-                        <input id = "T" type = "text" name = "title" value = "Title" required><br><br>
-                        <input id = "D" type = "text" name = "description" value = "Description" required>
-                    </td>
-                    <td>
-                        <input id = "addButton" type = "submit" value = "Submit">
-                    </td>
-                </tr>
-            </form>
-        </table>
+                            <label for="Title"></label><br><input type="text" id="Title" name="title" value="" required><br>
+                            <label for="Description"></label><br><input type="text" id="Description" name="description" value="" required>
 
-        <table id = "tableOfTasks">
-        <th id = "nameOfTable2">Things to do:</th>
+                            <input id = "addButton" type = "submit" value = "Submit">
+            </form>
+
+        <h3>Things to do:</h3>
             <?php
             // Will post the item and desc onto list 
                 if (isset($_POST["title"]) && isset($_POST["description"]))
@@ -77,6 +67,5 @@
                 $results = $statement->fetchAll();
                 $statement->closeCursor();
             ?>
-        </table>
     </body>
 </html>
