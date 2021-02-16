@@ -5,19 +5,19 @@
 ?>
 <!DOCTYPE html>
 <html lang = "en">
-
+    <body>
     <head>
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width-device-width, initial-scale=1.0">
         <link rel = "stylesheet" href = "css//main.css">
         <title>ToDo List</title>
     </head>
-
+    <h2>ToDo List </h2><br>
+    
         <h3>Add things to list</h3>
             <form action = "index.php" method = "POST">
-                            <label for="Title"></label><br><input type="text" id="Title" name="title" value="" required><br>
-                            <label for="Description"></label><br><input type="text" id="Description" name="description" value="" required>
-
+                            <label for="Title"></label><br><input type="text" id="Title" name="title" placeholder="title" value="" required><br>
+                            <label for="Description"></label><br><input type="text" id="Description" name="description" placeholder="description" value="" required>
                             <input id = "addButton" type = "submit" value = "Submit">
             </form>
 
@@ -56,8 +56,8 @@
                 foreach ($results as $result) :
                     echo "<form action = 'index.php' method = 'POST'>";
                     echo "<input type = 'number' name = 'del' value = " . $result["ItemNum"] . " style = 'visibility: hidden;'>";
-                    echo "<tr><td class = 'content'><b class = 'title'>" . htmlspecialchars($result["Title"]) . "</b><br>";
-                    echo htmlspecialchars($result["Description"]) . "</td><td class = 'other'><input type = 'submit' class = 'del' value = 'Delete'></td></tr></form>";
+                    echo "<b class = 'title'>" . htmlspecialchars($result["Title"]) . "</b><br>";
+                    echo htmlspecialchars($result["Description"]) . "<input type = 'submit' class = 'del' value = 'Delete'></form>";
                     $counter++;
                 endforeach;
 
