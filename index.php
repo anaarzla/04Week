@@ -12,16 +12,19 @@
         <link rel = "stylesheet" href = "css//main.css">
         <title>ToDo List</title>
     </head>
-    <h2>ToDo List </h2><br>
-    
+    <div class="header"><h2>ToDo List</h2></div>
+    <div class="row">
+    <div class="column" style="background-color:#aaa;">
         <h3>Add things to list</h3>
             <form action = "index.php" method = "POST">
                             <label for="Title"></label><br><input type="text" id="Title" name="title" placeholder="title" value="" required><br>
                             <label for="Description"></label><br><input type="text" id="Description" name="description" placeholder="description" value="" required>
                             <input id = "addButton" type = "submit" value = "Submit">
             </form>
+</div>
 
-        <h3>Things to do:</h3>
+<div class="column" style="background-color:#bbb;">        
+        <h3>Things to do:</h3> 
             <?php
             // Will post the item and desc onto list 
                 if (isset($_POST["title"]) && isset($_POST["description"]))
@@ -67,5 +70,6 @@
                 $results = $statement->fetchAll();
                 $statement->closeCursor();
             ?>
+            </div>
     </body>
 </html>
