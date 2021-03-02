@@ -1,75 +1,49 @@
 <?php
-    require 'database.php';
-    $newTitle = filter_input(INPUT_POST, "newTitle", FILTER_SANITIZE_STRING);
-    $newDescription = filter_input(INPUT_POST, "newDescription", FILTER_SANITIZE_STRING);
-?>
-<!DOCTYPE html>
-<html lang = "en">
-    <body>
-    <head>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width-device-width, initial-scale=1.0">
-        <link rel = "stylesheet" href = "css//main.css">
-        <title>ToDo List</title>
-    </head>
-    <div class="header"><h2>ToDo List</h2></div>
-    <div class="row">
-    <div class="column" style="background-color:#aaa;">
-        <h3>Add things to list</h3>
-            <form action = "index.php" method = "POST">
-                            <label for="Title"></label><br><input type="text" id="Title" name="title" placeholder="title" value="" required><br>
-                            <label for="Description"></label><br><input type="text" id="Description" name="description" placeholder="description" value="" required>
-                            <input id = "addButton" type = "submit" value = "Submit">
-            </form>
-</div>
+require('./model/db_connect.php');
+require('./model/item_db.php');
+require('./model/category_db.php');
 
-<div class="column" style="background-color:#bbb;">        
-        <h3>Things to do:</h3> 
-            <?php
-            // Will post the item and desc onto list 
-                if (isset($_POST["title"]) && isset($_POST["description"]))
-                {
-                    $title = $_POST["title"];
-                    $description = $_POST["description"];
-                    $query = "INSERT INTO todoitems (Title, Description) VALUES ('" . $title . "','" . $description . "')";
-                    $statement = $db->prepare($query);
-                    $statement->execute();
-                    $results = $statement->fetchAll();
-                    $statement->closeCursor();
-                }
-                // delete items from the list 
-                if (isset($_POST["del"]))
-                {
-                    $item = $_POST["del"];
-                    $query = "DELETE FROM todoitems WHERE ItemNum = '" . $item . "'";
-                    $statement = $db->prepare($query);
-                    $statement->execute();
-                    $results = $statement->fetchAll();
-                    $statement->closeCursor();
-                }
+$action = filter_input(INPUT_POST, 'action');
+if ($action == NULL) {
+    $action = filter_input(INPUT_GET, 'action');
+    if ($action == NULL) {
+        $action = 'list_items';
+    }
+}
 
-                // retreives info from database 
-                $query = "SELECT ItemNum, Title, Description FROM todoitems ORDER BY ItemNum ASC";
-                $statement = $db->prepare($query);
-                $statement->execute();
-                $results = $statement->fetchAll();
-                $statement->closeCursor();
-                
-                $counter = 1;
-                foreach ($results as $result) :
-                    echo "<form action = 'index.php' method = 'POST'>";
-                    echo "<input type = 'number' name = 'del' value = " . $result["ItemNum"] . " style = 'visibility: hidden;'>";
-                    echo "<b class = 'title'>" . htmlspecialchars($result["Title"]) . "</b><br>";
-                    echo htmlspecialchars($result["Description"]) . "<input type = 'submit' class = 'del' value = 'Delete'></form>";
-                    $counter++;
-                endforeach;
-
-                $query = "ALTER TABLE todoitems AUTO_INCREMENT = $counter";
-                $statement = $db->prepare($query);
-                $statement->execute();
-                $results = $statement->fetchAll();
-                $statement->closeCursor();
-            ?>
-            </div>
-    </body>
-</html>
+if ($action == 'list_items') {
+    if (!isset($categoryId)) {
+        $categoryId = filter_input(
+            INPUT_GET,
+            'categoryId',
+            FILTER_VALIDATE_INT
+        );
+    }
+    $allCategories = get_categories();
+    $todos = get_todos_by_category($categoryId);
+    include('./view/item_list.php');
+} else if ($action == 'add_item') {
+    $new_todo_title = filter_input(INPUT_POST, 'new_todo_title');
+    $new_todo_description = filter_input(INPUT_POST, 'new_todo_description');
+    $new_todo_categoryId = filter_input(INPUT_POST, 'new_todo_categoryId', FILTER_VALIDATE_INT);
+    add_todo($new_todo_title, $new_todo_description, $new_todo_categoryId);
+    header('Location: .?action=list_items');
+} else if ($action == 'delete_item') {
+    $delete_todo_itemnum = filter_input(INPUT_POST, 'todo_itemnum');
+    delete_todo($delete_todo_itemnum);
+    header('Location: .?action=list_items');
+} else if ($action == 'show_add_form') {
+    $allCategories = get_categories();
+    include('./view/add_item_form.php');
+} else if ($action == 'show_category_form') {
+    $allCategories = get_categories();
+    include('./view/category_list.php');
+} else if ($action == 'add_category') {
+    $new_category_name = filter_input(INPUT_POST, 'new_category_name');
+    add_category($new_category_name);
+    header('Location: .?action=show_category_form');
+} else if ($action == 'delete_category') {
+    $category_id_to_delete = filter_input(INPUT_POST, 'category_id_to_delete', FILTER_VALIDATE_INT);
+    delete_category($category_id_to_delete);
+    header('Location: .?action=show_category_form');
+}
